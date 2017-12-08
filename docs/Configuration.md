@@ -60,6 +60,7 @@ Note that certain chain options affect the format and indexing of the chain data
 - `compact`: Enable compact block relay (default: true).
 - `bip37`: Enable serving of bip37 merkleblocks (default: false).
 - `bip151`: Enable bip151 peer-to-peer encryption (default: false).
+- `bip157`: Enable indexing and serving of bip157 compact filters (default: false, implies index-filters).
 - `listen`: Accept incoming connections (default: true).
 - `max-outbound`: Max number of outbound connections (default: 8).
 - `max-inbound`: Max number of inbound connections (default: 30).
