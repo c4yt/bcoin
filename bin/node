@@ -41,7 +41,7 @@ if (!node.config.bool('no-wallet') && !node.has('walletdb')) {
 }
 
 if (node.config.bool('index-tx')) {
-  const plugin = require('../lib/indexers/txindexer.js');
+  const plugin = require('../lib/indexers/plugin');
   node.use(plugin);
 }
 
