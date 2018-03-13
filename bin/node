@@ -40,11 +40,6 @@ if (!node.config.bool('no-wallet') && !node.has('walletdb')) {
   node.use(plugin);
 }
 
-if (node.config.bool('indexers')) {
-  const plugin = require('../lib/indexers/plugin');
-  node.use(plugin);
-}
-
 process.on('unhandledRejection', (err, promise) => {
   throw err;
 });
