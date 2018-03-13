@@ -37,6 +37,7 @@
     "blru": "~0.0.1",
     "blst": "~0.0.1",
     "bmutex": "~0.0.2",
+    "bindex": "github:tuxcanfly/bindex",
     "bn.js": "~4.11.8",
     "bsip": "~0.0.2",
     "bsock": "~0.0.2",
