@@ -22,70 +22,37 @@ const db = bdb.create({
 async function updateVersion() {
   console.log('Checking version.');
 
-  const data = await db.get(layout.V.build());
-  assert(data, 'No version.');
+  await db.verify(layout.V.build(), 'chain', 4);
 
-  const ver = data.readUInt32LE(0, true);
+  console.log('Updating version to %d.', 5);
 
-  if (ver !== 4)
-    throw Error(`DB is version ${ver}.`);
+  await db.del(layout.V.build());
+  await db.verify(layout.V.build(), 'chain', 5);
+}
 
-  console.log('Updating version to %d.', ver + 1);
+async function removeKey(prefix) {
+  const iter = db.iterator({
+    gte: prefix.min(),
+    lte: prefix.max(),
+    reverse: true,
+    keys: true
+  });
 
-  const buf = Buffer.allocUnsafe(5 + 4);
-  buf.write('chain', 0, 'ascii');
-  buf.writeUInt32LE(4, 6, true);
+  const batch = db.batch();
 
-  parent.put(layout.V.build(), buf);
+  while (await iter.next()) {
+    const {key} = iter;
+    batch.del(key);
+  }
+  await batch.write();
 }
 
 async function removeIndexes() {
   console.log('Removing indexes...');
 
-  let iter = this.db.iterator({
-    gte: layout.t.min(),
-    lte: layout.t.max(),
-    reverse: true,
-    keys: true
-  });
-
-  let batch = this.db.batch();
-
-  while (await iter.next()) {
-    const {key} = iter;
-    batch.del(key);
-  }
-  await batch.write();
-
-  iter = this.db.iterator({
-    gte: layout.T.min(),
-    lte: layout.T.max(),
-    reverse: true,
-    keys: true
-  });
-
-  batch = this.db.batch();
-
-  while (await iter.next()) {
-    const {key} = iter;
-    batch.del(key);
-  }
-  await batch.write();
-
-  iter = this.db.iterator({
-    gte: layout.C.min(),
-    lte: layout.C.max(),
-    reverse: true,
-    keys: true
-  });
-
-  batch = this.db.batch();
-
-  while (await iter.next()) {
-    const {key} = iter;
-    batch.del(key);
-  }
-  await batch.write();
+  removeKey(layout.t);
+  removeKey(layout.T);
+  removeKey(layout.C);
 
   console.log('Removed indexes');
 }
