@@ -1,7 +1,7 @@
 'use strict';
 
 const bcoin = require('../..');
-const Index = require('bindex').Index;
+const Index = require('bindex/lib/index');
 
 // Create a blockchain and store it in leveldb.
 // `db` also accepts `rocksdb` and `lmdb`.
