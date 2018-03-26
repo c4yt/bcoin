@@ -30,7 +30,9 @@ async function updateVersion() {
   await db.verify(layout.V.build(), 'chain', 5);
 }
 
-async function removeKey(prefix) {
+async function removeKey(name, prefix) {
+  console.log('Removing %s index', name);
+
   const iter = db.iterator({
     gte: prefix.min(),
     lte: prefix.max(),
@@ -38,21 +40,32 @@ async function removeKey(prefix) {
     keys: true
   });
 
-  const batch = db.batch();
+  let batch = db.batch();
+  let total = 0;
 
   while (await iter.next()) {
     const {key} = iter;
+
     batch.del(key);
+
+    if (++total % 10000 === 0) {
+      console.log('Cleaned up %d %s index records.', total, name);
+      await batch.write();
+      batch = db.batch();
+    }
   }
+
   await batch.write();
+
+  console.log('Cleaned up %d %s index records.', total, name);
 }
 
 async function removeIndexes() {
   console.log('Removing indexes...');
 
-  removeKey(layout.t);
-  removeKey(layout.T);
-  removeKey(layout.C);
+  removeKey('hash -> tx', layout.t);
+  removeKey('addr -> tx', layout.T);
+  removeKey('addr -> coin', layout.C);
 
   console.log('Removed indexes');
 }
