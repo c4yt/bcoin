@@ -1,7 +1,7 @@
 'use strict';
 
 const bcoin = require('../..');
-const Index = require('bindex/lib/index');
+const Index = require('bindex').Index;
 
 // Create a blockchain and store it in leveldb.
 // `db` also accepts `rocksdb` and `lmdb`.
@@ -67,4 +67,8 @@ const index = new Index({
   console.log(`Tx with hash ${tx.hash()}:`, meta);
   console.log(`Tx input: ${tx.getInputValue(coinview)},` +
     ` output: ${tx.getOutputValue()}, fee: ${tx.getFee(coinview)}`);
+
+  await index.close();
+  await chain.close();
+  await pool.close();
 })();
