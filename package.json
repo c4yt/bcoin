@@ -50,7 +50,7 @@
     "golomb": "^0.2.0",
     "mrmr": "~0.0.1",
     "n64": "~0.1.1",
-    "golomb": "github:bcoin-org/golomb"
+    "golomb": "github:tuxcanfly/golomb#gcs-index"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
