@@ -1,7 +1,9 @@
 'use strict';
 
 const assert = require('assert');
+const bio = require('bufio');
 const bdb = require('bdb');
+const Network = require('../lib/protocol/network');
 const layout = require('../lib/blockchain/layout');
 
 // changes:
@@ -18,6 +20,48 @@ const db = bdb.create({
   cacheSize: 32 << 20,
   createIfMissing: false
 });
+
+/**
+ * ChainFlags
+ */
+
+class ChainFlags {
+  constructor(options) {
+    this.network = Network.primary;
+    this.spv = false;
+    this.witness = true;
+    this.prune = false;
+    this.indexTX = false;
+    this.indexAddress = false;
+    this.bip91 = false;
+    this.bip148 = false;
+
+    if (options)
+      this.fromOptions(options);
+  }
+
+  fromRaw(data) {
+    const br = bio.read(data);
+
+    this.network = Network.fromMagic(br.readU32());
+
+    const flags = br.readU32();
+
+    this.spv = (flags & 1) !== 0;
+    this.witness = (flags & 2) !== 0;
+    this.prune = (flags & 4) !== 0;
+    this.indexTX = (flags & 8) !== 0;
+    this.indexAddress = (flags & 16) !== 0;
+    this.bip91 = (flags & 32) !== 0;
+    this.bip148 = (flags & 64) !== 0;
+
+    return this;
+  }
+
+  static fromRaw(data) {
+    return new ChainFlags().fromRaw(data);
+  }
+}
 
 async function updateVersion() {
   console.log('Checking version.');
@@ -60,16 +104,6 @@ async function removeKey(name, prefix) {
   console.log('Cleaned up %d %s index records.', total, name);
 }
 
-async function removeIndexes() {
-  console.log('Removing indexes...');
-
-  removeKey('hash -> tx', layout.t);
-  removeKey('addr -> tx', layout.T);
-  removeKey('addr -> coin', layout.C);
-
-  console.log('Removed indexes');
-}
-
 /*
  * Execute
  */
@@ -79,12 +113,26 @@ async function removeIndexes() {
 
   console.log('Opened %s.', process.argv[2]);
 
-  parent = db.batch();
-
   await updateVersion();
-  await removeIndexes();
 
+  const data = await db.get(layout.O.build());
+  const flags = ChainFlags.fromRaw(data);
+
+  if (!flags.indexTX && !flags.indexAddress) {
+    await db.close();
+    return;
+  }
+
+  parent = db.batch();
+  if (flags.indexTX)
+    removeKey('hash -> tx', layout.t);
+
+  if (flags.indexAddress) {
+    removeKey('addr -> tx', layout.T);
+    removeKey('addr -> coin', layout.C);
+  }
   await parent.write();
+
   await db.close();
 })().then(() => {
   console.log('Migration complete.');
