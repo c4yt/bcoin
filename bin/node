@@ -40,6 +40,12 @@ if (!node.config.bool('no-wallet') && !node.has('walletdb')) {
   node.use(plugin);
 }
 
+if (node.config.bool('index-tx') || node.config.bool('index-address')) {
+  const plugin = require('../lib/index/plugin');
+  node.use(plugin);
+  node.index = node.require(plugin.id);
+}
+
 process.on('unhandledRejection', (err, promise) => {
   throw err;
 });
