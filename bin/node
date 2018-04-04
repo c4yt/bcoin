@@ -44,6 +44,11 @@ if (node.config.bool('index-tx') || node.config.bool('index-address')) {
   const plugin = require('../lib/index/plugin');
   node.use(plugin);
   node.index = node.require(plugin.id);
+
+  // FIXME
+  node.http.index = node.index;
+  node.rpc.index = node.index;
+  node.pool.index = node.index;
 }
 
 process.on('unhandledRejection', (err, promise) => {
