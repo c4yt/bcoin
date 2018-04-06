@@ -40,7 +40,9 @@ if (!node.config.bool('no-wallet') && !node.has('walletdb')) {
   node.use(plugin);
 }
 
-if (node.config.bool('index-tx') || node.config.bool('index-address')) {
+// FIXME
+if (node.config.bool('index-tx') || node.config.bool('index-address') ||
+    node.config.bool('index-filters') || node.config.bool('bip157')) {
   const plugin = require('../lib/index/plugin');
   node.use(plugin);
   node.index = node.require(plugin.id);
