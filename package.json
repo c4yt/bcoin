@@ -49,8 +49,7 @@
     "bweb": "~0.0.2",
     "golomb": "^0.2.0",
     "mrmr": "~0.0.1",
-    "n64": "~0.1.1",
-    "golomb": "github:tuxcanfly/golomb#gcs-index"
+    "n64": "~0.1.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
