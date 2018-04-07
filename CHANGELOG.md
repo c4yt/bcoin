@@ -149,6 +149,7 @@ of `*`, which notifies them of events on _all_ wallets).
   Due to the use of class syntax, something like `bcoin.Address(str)` is no
   longer possible. Please take a look at `lib/bcoin.js` to get a better idea of
   what has changed.
+- __/bcoin/blockchain/chain - getSpentView accepts a TXMeta insted of TX
 
 ## v1.0.0-beta.15
 

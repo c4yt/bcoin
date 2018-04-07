@@ -1103,7 +1103,6 @@ describe('TX', function() {
       assert.strictEqual(json.index, index);
     }
   });
-
   it('should recover coins from JSON', () => {
     const [tx, view] = tx2.getTX();
 
